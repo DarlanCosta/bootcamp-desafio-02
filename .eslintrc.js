@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    'airbnb-base',
+    'airbnb-base', 'prettier'
   ],
   globals: {
     Atomics: 'readonly',
@@ -23,4 +23,5 @@ module.exports = {
     "no-unused-vars": ["error", {"argsIgnorePattern": "next" }]
 
   },
+  plugins: ['prettier']
 };

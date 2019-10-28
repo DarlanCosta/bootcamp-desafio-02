@@ -15,11 +15,16 @@ class StudentController {
       return res.status(400).json({ error: 'Falha na validação dos dados' });
     }
 
-    //const studentExists = await Student.findOne({ where: { name: req.body.name } });
+    const studentName = await Student.findOne({ where: { name: req.body.name } });
+    const studentEmail = await Student.findOne({ where: { email: req.body.email } });
 
-    // if (studentExists) {
-    //   return res.status(400).json({ error: 'Student already exists.' });
-    // }
+    if (studentName) {
+       return res.status(400).json({ error: 'Student name already exists.' });
+    }
+    if (studentEmail) {
+       return res.status(400).json({ error: 'Student e-mail already exists.' });
+    }
+
     const { id, name, email, idade, peso, altura } = await Student.create(req.body);
     return res.json({
       id,
@@ -35,16 +40,22 @@ class StudentController {
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string().email(),
-      idade: Yup.string().number(),
-      peso: Yup.string().number(),
-      altura: Yup.string().number()
+      idade: Yup.number(),
+      peso: Yup.number(),
+      altura: Yup.number()
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { id, name, idade, peso, altura } = await Student.update(req.body);
+    const student = await Student.findByPk(req.body.id);
+
+    if (!student) {
+      return res.status(400).json({ error: 'Student dont exist' });
+   }
+
+    const { id, name, email, idade, peso, altura } = await Student.update(req.body, { where: {id: req.body.id } });
     return res.json({
       id,
       name,
